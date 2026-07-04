@@ -144,15 +144,13 @@
     touch-action:pan-y;
   }
   .compare .layer{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    font-family:'Bebas Neue',sans-serif; letter-spacing:0.05em;
+    position:absolute; inset:0; overflow:hidden;
   }
-  .compare .dirty{background:linear-gradient(135deg,#5c5348,#3d372e); color:#c9c2b4;}
-  .compare .dirty .grime{position:absolute; inset:0; background:
-      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.35) 0, transparent 40%),
-      radial-gradient(circle at 70% 60%, rgba(0,0,0,0.3) 0, transparent 35%),
-      radial-gradient(circle at 40% 80%, rgba(0,0,0,0.25) 0, transparent 30%);}
-  .compare .clean{background:linear-gradient(135deg,#e7edf0,#c7d6dc); color:#0B2942;}
+  .compare .layer img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .compare .dirty{}
+  .compare .clean{}
   .compare .clean-after{position:absolute; inset:0; overflow:hidden;}
   .compare .handle{
     position:absolute; top:0; bottom:0; width:3px; background:var(--brass);
@@ -301,7 +299,6 @@
         <div class="price">1400 kr</div>
         <ul>
           <li>Alt i full pakke</li>
-          <li>Polering av lakk</li>
           <li>Skinn-/dashbordpleie</li>
           <li>Grundig luktfjerning</li>
         </ul>
@@ -418,9 +415,9 @@
 
   // ---------- GALLERY: before/after slider ----------
   const galleryData = [
-    { title: "Sedan", tagline: "Full pakke" },
-    { title: "SUV", tagline: "Premium" },
-    { title: "Interiør", tagline: "Innvendig" }
+    { title: "Bagasjerom", tagline: "Full pakke", before: "images/trunk-before.jpg", after: "images/trunk-after.jpg" },
+    { title: "Koppholdere", tagline: "Innvendig", before: "images/cupholder-before.jpg", after: "images/cupholder-after.jpg" },
+    { title: "Gulvmatter", tagline: "Innvendig", before: "images/floor-before.jpg", after: "images/floor-after.jpg" }
   ];
   const grid = document.getElementById('gallery-grid');
   galleryData.forEach((g, i) => {
@@ -429,9 +426,9 @@
     card.innerHTML = `
       <div class="slider-label">${g.title} <span>${g.tagline}</span></div>
       <div class="compare" id="compare-${i}">
-        <div class="layer dirty"><div class="grime"></div>SKITTEN</div>
+        <div class="layer dirty"><img src="${g.before}" alt="${g.title} før"></div>
         <div class="layer clean">
-          <div class="clean-after" id="clean-after-${i}">REN</div>
+          <div class="clean-after" id="clean-after-${i}"><img src="${g.after}" alt="${g.title} etter"></div>
         </div>
         <span class="compare-tag tag-before">FØR</span>
         <span class="compare-tag tag-after">ETTER</span>
