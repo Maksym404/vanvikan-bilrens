@@ -6,6 +6,7 @@
 <title>Vanvikan Mobil Bilrens</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root{
     --navy:#0B2942;
@@ -412,6 +413,12 @@
   const OWNER_PHONE = "+4790000000";
   const ADMIN_PASSCODE = "0910b";
 
+  // ---- EmailJS config ----
+  const EMAILJS_PUBLIC_KEY = "iCy4qRCk9vBEnyNej";
+  const EMAILJS_SERVICE_ID = "service_t94zl2u";
+  const EMAILJS_TEMPLATE_ID = "template_9h34fi3";
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
   // ---------- GALLERY: before/after slider ----------
   const galleryData = [
     { title: "Bagasjerom", tagline: "Full pakke", before: "trunk-before.jpg", after: "trunk-after.jpg" },
@@ -482,6 +489,12 @@
       await window.storage.set(id, JSON.stringify(booking), true);
     } catch (err) {
       console.error('Kunne ikke lagre bestilling:', err);
+    }
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, booking);
+    } catch (err) {
+      console.error('E-post kunne ikke sendes:', err);
     }
 
     const msg = `Ny bestilling: ${booking.name}, ${booking.phone}. ${booking.cartype}, ${booking.service}. Dato: ${booking.date}. Sted: ${booking.address}. ${booking.notes ? 'Merknad: '+booking.notes : ''}`;
