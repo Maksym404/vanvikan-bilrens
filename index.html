@@ -216,20 +216,6 @@
   /* FOOTER */
   footer{background:#081C2C; color:var(--mist); padding:40px 24px; text-align:center; font-size:13px;}
   footer .foot-logo{font-family:'Bebas Neue',sans-serif; color:var(--foam); font-size:20px; margin-bottom:10px;}
-  .admin-link{color:#4A5A63; text-decoration:underline; cursor:pointer; font-size:12px;}
-
-  /* ADMIN PANEL */
-  #admin-panel{
-    display:none; position:fixed; inset:0; background:rgba(8,20,30,0.92); z-index:100;
-    overflow-y:auto; padding:40px 20px;
-  }
-  .admin-box{
-    max-width:700px; margin:0 auto; background:var(--foam); border-radius:var(--radius); padding:28px;
-  }
-  .admin-box h3{color:var(--navy); margin-bottom:16px;}
-  .booking-row{border-bottom:1px solid #DDE3E1; padding:12px 0; font-size:14px;}
-  .booking-row b{color:var(--navy);}
-  .close-admin{float:right; cursor:pointer; font-weight:700; color:var(--navy);}
 </style>
 </head>
 <body>
@@ -397,21 +383,11 @@
 <footer>
   <div class="foot-logo">VANVIKAN MOBIL BILRENS</div>
   <div>Vanvikan · Trøndelag &nbsp;·&nbsp; Vipps &amp; kontant</div>
-  <div style="margin-top:16px;"><span class="admin-link" id="open-admin">For eier: se bestillinger</span></div>
 </footer>
-
-<div id="admin-panel">
-  <div class="admin-box">
-    <span class="close-admin" id="close-admin">Lukk ✕</span>
-    <h3>Innkommende bestillinger</h3>
-    <div id="admin-list">Laster...</div>
-  </div>
-</div>
 
 <script>
   // ---- EDIT THIS: your phone number in international format, no spaces ----
   const OWNER_PHONE = "+4790000000";
-  const ADMIN_PASSCODE = "0910b";
 
   // ---- EmailJS config ----
   const EMAILJS_PUBLIC_KEY = "iCy4qRCk9vBEnyNej";
@@ -486,12 +462,6 @@
     const id = 'booking:' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
 
     try {
-      await window.storage.set(id, JSON.stringify(booking), true);
-    } catch (err) {
-      console.error('Kunne ikke lagre bestilling:', err);
-    }
-
-    try {
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, booking);
     } catch (err) {
       console.error('E-post kunne ikke sendes:', err);
@@ -509,47 +479,6 @@
     form.reset();
     submitBtn.disabled = false;
     submitBtn.textContent = 'Send bestilling';
-  });
-
-  // ---------- ADMIN PANEL ----------
-  const adminPanel = document.getElementById('admin-panel');
-  document.getElementById('open-admin').addEventListener('click', async () => {
-    const code = prompt('Passord for eier:');
-    if (code !== ADMIN_PASSCODE) {
-      if (code !== null) alert('Feil passord.');
-      return;
-    }
-    adminPanel.style.display = 'block';
-    const listEl = document.getElementById('admin-list');
-    listEl.textContent = 'Laster...';
-    try {
-      const result = await window.storage.list('booking:', true);
-      const keys = result && result.keys ? result.keys : [];
-      if (keys.length === 0) {
-        listEl.textContent = 'Ingen bestillinger ennå.';
-        return;
-      }
-      listEl.innerHTML = '';
-      for (const key of keys.reverse()) {
-        try {
-          const item = await window.storage.get(key, true);
-          const b = JSON.parse(item.value);
-          const row = document.createElement('div');
-          row.className = 'booking-row';
-          row.innerHTML = `<b>${b.name}</b> — ${b.phone}<br>
-            ${b.cartype}, ${b.service}<br>
-            Dato: ${b.date} · Sted: ${b.address}
-            ${b.notes ? '<br>Merknad: '+b.notes : ''}`;
-          listEl.appendChild(row);
-        } catch (e) { /* skip broken entry */ }
-      }
-    } catch (err) {
-      listEl.textContent = 'Kunne ikke hente bestillinger.';
-      console.error(err);
-    }
-  });
-  document.getElementById('close-admin').addEventListener('click', () => {
-    adminPanel.style.display = 'none';
   });
 </script>
 
